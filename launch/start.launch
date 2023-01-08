@@ -1,0 +1,43 @@
+<launch>
+  <arg name="uav_name" default="$(env UAV_NAMESPACE)"/>
+  <arg name="node_start_delay" default="0.5"/>
+
+  <group ns="$(arg uav_name)">
+
+      <!-- optitrack node -->
+      <!-- <node pkg="uav_docking" type="pose_estimate" name="pose_estimate" output="screen">
+          <rosparam file="$(find uav_docking)/config/params.yaml"  command="load"/>
+          <remap from="odometry" to="fused/odom"/>
+          <remap from="pose" to="mavros/global_position/local"/>
+      </node> -->
+    
+      <!-- uav_docking node  -->
+      <node pkg="uav_docking" type="uav_docking" name="uav_docking" output="screen" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
+          <rosparam file="$(find uav_docking)/config/params.yaml"  command="load"/>
+          <remap from="odometry" to="mavros/global_position/local"/>
+          
+      </node>
+    <!-- aruco pose estimation node  -->
+    <!-- <node pkg="noise_filter" type="noise_filter_odometry_covariance" name="noise_filter_odometry_covariance" output="screen" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' "> -->
+              <!-- <rosparam file="$(find noise_filter)/config/params.yaml"  command="load"/> -->
+          <!-- <remap from="twist" to="agv_vel"/> -->
+          <!-- <remap from="/odometry_with_covariance" to=""/> -->
+          <!-- <remap from="/odometry" to=""/> -->
+    <!-- </node> -->
+
+
+  </group>
+
+  <!-- robot_localization node -->
+  <!-- <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true"> -->
+      <!-- <rosparam command="load" file="$(find uav_docking)/config/robot_localization.yaml" /> -->
+      <!-- <param name="tf_prefix" value="$(arg uav_name)" /> -->
+      <!-- <remap from="cmd_vel" to="$(arg uav_name)/mavros/setpoint_velocity/cmd_vel"/> -->
+      <!--  Placeholder for output topic remapping
+      <remap from="odometry/filtered" to=""/>
+      <remap from="accel/filtered" to=""/>
+      -->
+
+  <!-- </node> -->
+
+</launch>

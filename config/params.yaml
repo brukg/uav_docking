@@ -1,0 +1,15 @@
+# frames
+base_link_frame: base_link
+map_frame: map
+odom_frame: odom
+
+
+# optitrack covariance parametrs
+x_var: 0.25
+y_var: 0.25
+z_var: 0.25
+yaw_var: 0.25
+
+
+# docking parameters
+minimum_battery_voltage: 41.0
