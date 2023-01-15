@@ -21,7 +21,8 @@ namespace uav_docking
     }
     current_battery_voltage_ = 0.0;
     _battery_sub = _nh.subscribe("mavros/battery", 10, &CheckBattery::batteryCallback, this);
-
+    // get ros param for battery charging status
+    _nh.param<bool>("battery_charging", _battery_charging, false);
     ROS_INFO_STREAM(name() << " Started! "<<_battery_read);
     return BT::NodeStatus::RUNNING;
   }
@@ -30,27 +31,30 @@ namespace uav_docking
   { 
     ROS_INFO_STREAM(name() << " Running!");
     ROS_INFO_STREAM(name() << " Minimum battery voltage: " << minimum_battery_voltage_);
-    ROS_INFO_STREAM(name() << _battery_read);
 
     // Check if the battery is low
-    if (_battery_read) {   
+    if (!_battery_charging && _battery_read) {   
       ROS_INFO_STREAM(name() << " Battery read! " << current_battery_voltage_);
       if (current_battery_voltage_ < minimum_battery_voltage_){
-          // If the battery is low, return SUCCESS
+          // If the battery is low, return FAILURE
           ROS_INFO("Battery LOW %f", current_battery_voltage_);
-          return BT::NodeStatus::SUCCESS;
+          return BT::NodeStatus::FAILURE;
       }
       else{
-          // If the battery is not low, return FAILURE
+          // If the battery is not low, return SUCCESS
           ROS_INFO("Battery OK %f", current_battery_voltage_);
           return BT::NodeStatus::SUCCESS;
       }
     }
-    else {
-      ROS_INFO_STREAM(name() << " Battery not read! " << current_battery_voltage_);
-      // setStatus(BT::NodeStatus::RUNNING);
+    else if ((!_battery_charging && !_battery_read) || _battery_charging) {
+      ROS_INFO_STREAM(name() << " Battery not read! or already charging" << current_battery_voltage_);
+
       return BT::NodeStatus::RUNNING;
-      return BT::NodeStatus::FAILURE;
+    } 
+    else {
+      ROS_INFO_STREAM(name() << " charging" << current_battery_voltage_);
+
+      return BT::NodeStatus::RUNNING;
     }
   }
 

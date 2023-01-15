@@ -46,6 +46,6 @@ namespace uav_docking
       ros::Subscriber _battery_sub;
       double current_battery_voltage_, minimum_battery_voltage_;
       bool _aborted;
-      bool _battery_read;
+      bool _battery_read, _battery_charging;
   };
 }

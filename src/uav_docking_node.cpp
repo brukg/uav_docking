@@ -14,7 +14,7 @@ namespace uav_docking
     void UAVDocking::init()
     {   
         // load parameters and tree
-        _private_nh.param<std::string>("behavior_tree_xml_path", _behavior_tree_xml_path, ros::package::getPath("uav_docking") + "/tree/docking.xml");
+        _private_nh.param<std::string>("behavior_tree_xml_path", _behavior_tree_xml_path, ros::package::getPath("uav_docking") + "/config/tree/docking.xml");
         // _private_nh.param<float>("minimum_battery_voltage", minimum_battery_voltage_, 38.0);
 
         // current_battery_voltage_ = -100.0; // initialize to a value that is not possible
@@ -23,6 +23,7 @@ namespace uav_docking
 
         // factory.registerNodeType<CheckBattery>("CheckBattery");
         factory.registerNodeType<MoveUAV>("MoveUAV");
+        factory.registerNodeType<HoverUAV>("HoverUAV");
         factory.registerNodeType<LandUAV>("LandUAV");
         RegisterROSNode<CheckBattery>(factory, "CheckBattery", _nh);
 
@@ -42,14 +43,14 @@ namespace uav_docking
     {
         BT::NodeStatus status = BT::NodeStatus::IDLE;
         std::cout << "--- status: " << toStr(status) << "\n\n";
-        while(ros::ok() && (status == BT::NodeStatus::IDLE || status == BT::NodeStatus::RUNNING|| status == BT::NodeStatus::RUNNING))
+        while(ros::ok() && (status == BT::NodeStatus::IDLE || status == BT::NodeStatus::RUNNING))
         {   
             ros::spinOnce();
             // Sleep to avoid busy loops.
             // do NOT use other sleep functions!
             // Small sleep time is OK, here we use a large one only to
             // have less messages on the console.
-            tree.sleep(std::chrono::seconds(1));
+            tree.sleep(std::chrono::milliseconds(500));
 
             std::cout << "--- ticking\n";
             status = tree.tickRoot();

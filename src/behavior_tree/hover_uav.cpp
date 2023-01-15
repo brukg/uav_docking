@@ -1,19 +1,19 @@
-#include "uav_docking/behavior_tree/move_to_pose.h"
+#include "uav_docking/behavior_tree/hover_uav.h"
 
 
 namespace uav_docking
 {
-  MoveUAV::MoveUAV( const std::string& name, const BT::NodeConfiguration& config)
-          : BT::SyncActionNode(name, config) {
+  HoverUAV::HoverUAV( const std::string& name, const BT::NodeConfiguration& config)
+          : BT::AsyncActionNode(name, config) {
     //controller status subscriber
-    _cntrlr_status_sub = _nh.subscribe("tracker/status", 1, &MoveUAV::controllerStatusCallback, this);
+    _cntrlr_status_sub = _nh.subscribe("tracker/status", 1, &HoverUAV::controllerStatusCallback, this);
     
     // controller input pose publisher
     _pose_pub = _nh.advertise<geometry_msgs::PoseStamped>("tracker/input_pose", 1);
     // ROS_INFO_STREAM(name() << " Started!");
   }
 
-  BT::NodeStatus MoveUAV::tick() {
+  BT::NodeStatus HoverUAV::tick() {
     
     setStatus(BT::NodeStatus::RUNNING);
 
@@ -29,8 +29,8 @@ namespace uav_docking
     // Reset this flag
     _aborted = false;
     std::vector<Pose3D> wps;
-    _waypoint_generator.generateWaypoints(goal, 'M', wps);
-    ROS_INFO("moving goal %f %f %f %f", goal.x, goal.y, goal.z, goal.psi);
+    _waypoint_generator.generateWaypoints(goal, 'H', wps);
+    ROS_INFO("hovering goal %f %f %f %f", goal.x, goal.y, goal.z, goal.psi);
     // ROS_INFO("wps 0 %f %f %f %f", wps[0].x, wps[0].y, wps[0].z, wps[0].psi);
     // wps.push_back({2, 2, 4, 0});
     
@@ -50,8 +50,8 @@ namespace uav_docking
         msg.pose.position.y = wps.front().y;
         msg.pose.position.z = wps.front().z;
 
-      _pose_pub.publish(msg);
-      wps.erase(wps.begin());
+        _pose_pub.publish(msg);
+        wps.erase(wps.begin());
       }
       // if (controller_status_ == "ACTIVE") break;
       // }
@@ -67,7 +67,7 @@ namespace uav_docking
 
 
     if (_aborted) {
-      ROS_ERROR("MoveUAV aborted");
+      ROS_ERROR("HoverUAV aborted");
       return BT::NodeStatus::FAILURE;
     }
     ROS_INFO("Target reached");
@@ -75,7 +75,7 @@ namespace uav_docking
     return BT::NodeStatus::SUCCESS;
   }
 
-  void MoveUAV::controllerStatusCallback(const std_msgs::String::ConstPtr& msg)
+  void HoverUAV::controllerStatusCallback(const std_msgs::String::ConstPtr& msg)
   {
           // ROS_INFO("Controller status: %s", msg->data.c_str());
           controller_status_ = msg->data;

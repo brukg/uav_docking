@@ -45,7 +45,7 @@ for a dron at a hovering state at some height from the docking station this node
 
 ## Results
 
-behavior tree sample
+behavior tree for checking battery and moving to charging station
 
 <!-- ![tree](./imgs/btree.png) -->
 

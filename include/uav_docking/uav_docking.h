@@ -10,7 +10,8 @@
 
 
 #include "uav_docking/behavior_tree/move_to_pose.h"
-#include "uav_docking/behavior_tree/land.h"
+#include "uav_docking/behavior_tree/land_uav.h"
+#include "uav_docking/behavior_tree/hover_uav.h"
 #include "uav_docking/behavior_tree/check_battery.h"
 
 

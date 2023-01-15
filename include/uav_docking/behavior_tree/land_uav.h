@@ -32,7 +32,7 @@ namespace uav_docking
         ros::NodeHandle _nh;
         ros::Publisher _pose_pub;
         ros::Subscriber _cntrlr_status_sub;
-        bool _aborted;
+        bool _aborted, _battery_charging;
         WaypointGenerator _waypoint_generator;
         std::string controller_status_;
   };

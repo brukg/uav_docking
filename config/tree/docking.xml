@@ -2,30 +2,41 @@
 <root main_tree_to_execute="BehaviorTree">
     <!-- ////////// -->
     <BehaviorTree ID="BehaviorTree">
-        <Sequence>
+        <ReactiveSequence>
             <Fallback>
                 <ReactiveSequence>
                     <SetBlackboard output_key="minimum_battery_voltage" value="40"/>
-                    <SetBlackboard output_key="hovering_point" value="6.0; 7.0; 1.50;0.0"/>
-                    <SetBlackboard output_key="docking_point" value="6.0; 7.0; 0.50;0.0"/>
-                    <Sequence>
+                    <SetBlackboard output_key="hovering_point" value="6.0; 6.0; 1.50;0.0"/>
+                    <SetBlackboard output_key="docking_point" value="6.0; 6.0; 0.30;0.0"/>
+                    <SetBlackboard output_key="task_a" value="0.0; 0.0; 3.0;0.0"/>
+                    <SetBlackboard output_key="task_b" value="3.0; 3.0; 3.0;0.0"/>
+                    <Fallback>
                         <Action ID="CheckBattery" minimum_battery_voltage="{minimum_battery_voltage}"/>
-                        <ReactiveSequence>
-                            <SubTree ID="MoveRobot" target="hovering_point"/>
+                        <Sequence>
+                            <SubTree ID="HoverRobot" target="hovering_point"/>
                             <SubTree ID="LandRobot" target="docking_point"/>
-                        </ReactiveSequence>
-                    </Sequence>
+                        </Sequence>
+                    </Fallback>
+                    <Fallback>
+                    <Inverter>
+                        <Action ID="CheckBattery" minimum_battery_voltage="{minimum_battery_voltage}"/>
+                    </Inverter>
+                    <Action ID="MoveUAV" goal="{task_a}"/>
+                    <Action ID="MoveUAV" goal="{task_b}"/>
+
+                    </Fallback>
+
                 </ReactiveSequence>
             </Fallback>
-        </Sequence>
+        </ReactiveSequence>
     </BehaviorTree>
     <!-- ////////// -->
     <BehaviorTree ID="LandRobot">
         <Action ID="LandUAV" goal="{target}"/>
     </BehaviorTree>
     <!-- ////////// -->
-    <BehaviorTree ID="MoveRobot">
-        <Action ID="MoveUAV" goal="{target}"/>
+    <BehaviorTree ID="HoverRobot">
+        <Action ID="HoverUAV" goal="{target}"/>
     </BehaviorTree>
     <!-- ////////// -->
     <TreeNodesModel>
@@ -39,9 +50,12 @@
         <Action ID="LandUAV">
             <input_port name="goal"/>
         </Action>
-        <SubTree ID="MoveRobot">
+        <SubTree ID="HoverRobot">
             <input_port name="target"/>
         </SubTree>
+        <Action ID="HoverUAV">
+            <input_port name="goal"/>
+        </Action>
         <Action ID="MoveUAV">
             <input_port name="goal"/>
         </Action>

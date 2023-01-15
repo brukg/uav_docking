@@ -1,4 +1,4 @@
-#include "uav_docking/behavior_tree/land.h"
+#include "uav_docking/behavior_tree/land_uav.h"
 
 namespace uav_docking
 {
@@ -67,6 +67,9 @@ namespace uav_docking
     }
 
     ROS_INFO("Target reached");
+    // set battery charging status to true
+    _battery_charging = true;
+    _nh.setParam("battery_charging", _battery_charging);
     return BT::NodeStatus::SUCCESS;
   }
 

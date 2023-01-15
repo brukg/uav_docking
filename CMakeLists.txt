@@ -149,7 +149,8 @@ add_executable(pose_estimate
 add_executable(${PROJECT_NAME} 
   src/uav_docking_node.cpp
   src/waypoint_generator/waypoint_generator.cpp
-  src/behavior_tree/land.cpp
+  src/behavior_tree/land_uav.cpp
+  src/behavior_tree/hover_uav.cpp
   src/behavior_tree/move_to_pose.cpp
   src/behavior_tree/check_battery.cpp
   )

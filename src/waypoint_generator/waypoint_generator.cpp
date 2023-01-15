@@ -63,6 +63,8 @@ namespace waypoint_generator
                 break;
             case 'M' :
                 // use motion planner to generate waypoints for moving around
+                waypoints.push_back({mid_x, mid_y, mid_z, goal.psi});
+                waypoints.push_back({goal.x, goal.y, goal.z, goal.psi});
                 break;
         }
         

@@ -9,10 +9,10 @@
 using namespace waypoint_generator;     
 namespace uav_docking
 {
-class MoveUAV : public BT::SyncActionNode
+class HoverUAV : public BT::AsyncActionNode
 {
 public:
-    MoveUAV(const std::string &name, const BT::NodeConfiguration &config);
+    HoverUAV(const std::string &name, const BT::NodeConfiguration &config);
         
     void controllerStatusCallback(const std_msgs::String::ConstPtr &msg);
 
@@ -24,10 +24,10 @@ public:
 
     virtual BT::NodeStatus tick() override;
 
-    // virtual void halt() override
-    // {
-    //     _aborted.store(true);
-    // }
+    virtual void halt() override
+    {
+        _aborted.store(true);
+    }
 
 private:
     ros::NodeHandle _nh;
