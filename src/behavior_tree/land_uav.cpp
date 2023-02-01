@@ -10,6 +10,10 @@ namespace uav_docking
     
     // controller input pose publisher
     _pose_pub = _nh.advertise<geometry_msgs::PoseStamped>("tracker/input_pose", 1);
+
+    // create ros service client for landing
+    _land_client = _nh.serviceClient<std_srvs::SetBool>("land", true);
+
     
   }
 
@@ -32,13 +36,13 @@ namespace uav_docking
     std::vector<Pose3D> wps;
     _waypoint_generator.generateWaypoints(goal, 'L', wps);
     ros::Duration(0.2).sleep();
-    ROS_INFO(" goal %f %f %f %f", goal.x, goal.y, goal.z, goal.psi);
+    ROS_INFO_STREAM(name() << " goal " << goal.x << " " << goal.y << " " << goal.z << " " << goal.psi);
 
     // Build the message from waypoints
     geometry_msgs::PoseStamped msg;
     while (wps.size() > 0) {
-      ROS_INFO("controller status: %s", controller_status_.c_str());
-      ROS_INFO("Current Landing goal poses %f %f %f %f", wps.front().x, wps.front().y, wps.front().z, wps.front().psi);
+      ROS_INFO_STREAM(name() << "controller status: " << controller_status_.c_str());
+      ROS_INFO_STREAM(name() << "currnet goal poses " << wps.front().x << " " << wps.front().y << " " << wps.front().z << " " << wps.front().psi);
       // check if the controller is in ACCEPT state
       if (controller_status_ != "ACTIVE" && controller_status_ == "ACCEPT")
       {
@@ -62,12 +66,24 @@ namespace uav_docking
     }
 
     if (_aborted) {
-      ROS_ERROR("LandUAV aborted");
+      ROS_ERROR_STREAM(name() << "aborted");
       return BT::NodeStatus::FAILURE;
     }
 
-    ROS_INFO("Target reached");
+    ROS_INFO_STREAM(name() << "Target reached");
     // set battery charging status to true
+    // send bool true to the landing server
+    std_srvs::SetBool::Request req;
+    std_srvs::SetBool::Response res;
+    bool data = true;
+    req.data = true;
+    if (_land_client.call(req, res)) {
+      ROS_INFO_STREAM(name() << "Landing service called" << res.success);
+    }
+    else
+    {
+      ROS_ERROR_STREAM(name() << "Failed to call landing service");
+    }
     _battery_charging = true;
     _nh.setParam("battery_charging", _battery_charging);
     return BT::NodeStatus::SUCCESS;

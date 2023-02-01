@@ -13,10 +13,10 @@ namespace uav_docking {
     private_nh.param<double>("y_var", _y_var, 0.0025);
     private_nh.param<double>("yaw_var", _yaw_var, 0.0025);
 
-    // advertize robot pose(lidar) with covariance
+    // advertize robot pose(odom) with covariance
     odom_pub = node.advertise<nav_msgs::Odometry>("odometry", 1);
 
-    // subscribe to lidar pose msg 
+    // subscribe to odom pose msg 
     odom_sub = node.subscribe("pose", 
                                 1, 
                                 &PoseEstimate::odomPoseCallBack, 
@@ -27,10 +27,10 @@ namespace uav_docking {
   // Destructor
   PoseEstimate::~PoseEstimate(){};
 
-  //lidar pose call back
+  //odom pose call back
   void PoseEstimate::odomPoseCallBack(const nav_msgs::Odometry::ConstPtr& msg)
   {
-    // ROS_INFO("lidar pose callback");
+    // ROS_INFO("odom pose callback");
     nav_msgs::Odometry pose_msg;
     pose_msg.header.frame_id = _map_frame_id;
     pose_msg.header.stamp = msg->header.stamp;
@@ -40,7 +40,7 @@ namespace uav_docking {
     pose_msg.pose.covariance[35] = _yaw_var; // yaw covariance
     odom_pub.publish(pose_msg);
   };
-}; // namespace lidar_pose_with_covariance
+}; // namespace uav_docking
 
 
   

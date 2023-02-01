@@ -50,6 +50,7 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <depend>roscpp</depend>
+  <depend>uav_ros_msgs</depend>
   <exec_depend>actionlib</exec_depend>    
   <exec_depend>actionlib_msgs</exec_depend>
   <exec_depend>behaviortree_cpp_v3</exec_depend>

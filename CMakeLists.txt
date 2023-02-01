@@ -11,11 +11,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 ## is used, also find other catkin packages
 find_package(Eigen3 REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
-  actionlib
-  actionlib_msgs
   roscpp 
   behaviortree_cpp_v3 
   eigen_conversions
+  uav_ros_msgs
   
 )
 add_compile_options(-g)
@@ -113,6 +112,7 @@ catkin_package(
  INCLUDE_DIRS include
  LIBRARIES uav_docking
  CATKIN_DEPENDS roscpp
+ uav_ros_msgs
 #  DEPENDS system_lib
 )
 
@@ -150,9 +150,11 @@ add_executable(${PROJECT_NAME}
   src/uav_docking_node.cpp
   src/waypoint_generator/waypoint_generator.cpp
   src/behavior_tree/land_uav.cpp
+  src/behavior_tree/takeoff_uav.cpp
   src/behavior_tree/hover_uav.cpp
   src/behavior_tree/move_to_pose.cpp
-  src/behavior_tree/check_battery.cpp
+  src/behavior_tree/battery_low.cpp
+  src/behavior_tree/battery_full.cpp
   )
 
 ## Rename C++ executable without prefix

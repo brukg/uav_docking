@@ -3,52 +3,58 @@
     <!-- ////////// -->
     <BehaviorTree ID="BehaviorTree">
         <ReactiveSequence>
-            <Fallback>
-                <ReactiveSequence>
+            <Repeat num_cycles="10">
+                <Sequence>
+                    <!-- for battery -->
                     <SetBlackboard output_key="minimum_battery_voltage" value="40"/>
-                    <SetBlackboard output_key="hovering_point" value="6.0; 6.0; 1.50;0.0"/>
-                    <SetBlackboard output_key="docking_point" value="6.0; 6.0; 0.30;0.0"/>
-                    <SetBlackboard output_key="task_a" value="0.0; 0.0; 3.0;0.0"/>
-                    <SetBlackboard output_key="task_b" value="3.0; 3.0; 3.0;0.0"/>
+                    <SetBlackboard output_key="optimal_battery_voltage" value="10"/>
+
+                    <!-- for docking -->
+                    <!-- <SetBlackboard output_key="hovering_point" value="6.0; 6.0; 2.50; 0.0"/> -->
+                    <SetBlackboard output_key="hovering_point" value="6.0; 6.0; 1.00; 0.0"/>
+                    <!-- <SetBlackboard output_key="docking_point" value="6.0; 6.0; 1.622990; 0.0"/> -->
+                    <SetBlackboard output_key="docking_point" value="6.0; 6.0; 0.0; 0.0"/>
+
+                    <SetBlackboard output_key="take_off_height_relative" value="6.0; 6.0; 2.50;0.0"/>
+
+                    <SetBlackboard output_key="task_a" value="0.0; 0.0; 2.5.0;0.0"/>
+                    <SetBlackboard output_key="task_b" value="0.0; 1.0; 2.5;0.0"/>
+                    <SetBlackboard output_key="task_c" value="1.0; 1.0; 2.5;0.0"/>
+                    <SetBlackboard output_key="task_d" value="1.0; 0.0; 2.5; 0.0"/>
                     <Fallback>
-                        <Action ID="CheckBattery" minimum_battery_voltage="{minimum_battery_voltage}"/>
+                        <Action ID="LowBattery" minimum_battery_voltage="{minimum_battery_voltage}"/>
                         <Sequence>
                             <SubTree ID="HoverRobot" target="hovering_point"/>
                             <SubTree ID="LandRobot" target="docking_point"/>
                         </Sequence>
                     </Fallback>
-                    <Fallback>
-                    <Inverter>
-                        <Action ID="CheckBattery" minimum_battery_voltage="{minimum_battery_voltage}"/>
-                    </Inverter>
-                    <Action ID="MoveUAV" goal="{task_a}"/>
-                    <Action ID="MoveUAV" goal="{task_b}"/>
-
-                    </Fallback>
-
-                </ReactiveSequence>
-            </Fallback>
+                    <Sequence>
+                        <Action ID="FullBattery" optimal_battery_voltage="{optimal_battery_voltage}"/>
+                        <Action ID="TakeOffUAV" goal="{take_off_height_relative}"/>
+                        <Action ID="MoveUAV" goal="{task_a}"/>
+                        <Action ID="MoveUAV" goal="{task_b}"/>
+                        <Action ID="MoveUAV" goal="{task_c}"/>
+                        <Action ID="MoveUAV" goal="{task_d}"/>
+                    </Sequence>
+                </Sequence>
+            </Repeat>
         </ReactiveSequence>
-    </BehaviorTree>
-    <!-- ////////// -->
-    <BehaviorTree ID="LandRobot">
-        <Action ID="LandUAV" goal="{target}"/>
     </BehaviorTree>
     <!-- ////////// -->
     <BehaviorTree ID="HoverRobot">
         <Action ID="HoverUAV" goal="{target}"/>
     </BehaviorTree>
     <!-- ////////// -->
+    <BehaviorTree ID="LandRobot">
+        <Action ID="LandUAV" goal="{target}"/>
+    </BehaviorTree>
+    <!-- ////////// -->
     <TreeNodesModel>
-        <Condition ID="BatteryLOW"/>
-        <Action ID="CheckBattery">
-            <input_port default="10" name="minimum_battery_voltage"/>
+        <Action ID="FullBattery">
+            <inout_port name="optimal_battery_voltage"/>
         </Action>
-        <SubTree ID="LandRobot">
-            <input_port name="target"/>
-        </SubTree>
-        <Action ID="LandUAV">
-            <input_port name="goal"/>
+        <Action ID="FullwBattery">
+            <input_port default="10" name="optimal_battery_voltage"/>
         </Action>
         <SubTree ID="HoverRobot">
             <input_port name="target"/>
@@ -56,7 +62,19 @@
         <Action ID="HoverUAV">
             <input_port name="goal"/>
         </Action>
+        <SubTree ID="LandRobot">
+            <input_port name="target"/>
+        </SubTree>
+        <Action ID="LandUAV">
+            <input_port name="goal"/>
+        </Action>
+        <Action ID="LowBattery">
+            <input_port default="10" name="minimum_battery_voltage"/>
+        </Action>
         <Action ID="MoveUAV">
+            <input_port name="goal"/>
+        </Action>
+        <Action ID="TakeOffUAV">
             <input_port name="goal"/>
         </Action>
     </TreeNodesModel>

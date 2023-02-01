@@ -8,11 +8,13 @@
 
 #include <std_msgs/String.h>
 
-
+// behavior nodes
 #include "uav_docking/behavior_tree/move_to_pose.h"
 #include "uav_docking/behavior_tree/land_uav.h"
+#include "uav_docking/behavior_tree/takeoff_uav.h"
 #include "uav_docking/behavior_tree/hover_uav.h"
-#include "uav_docking/behavior_tree/check_battery.h"
+#include "uav_docking/behavior_tree/battery_low.h"
+#include "uav_docking/behavior_tree/battery_full.h"
 
 
 using namespace BT;
@@ -20,25 +22,25 @@ using namespace BT;
 
 namespace uav_docking
 {
-    class UAVDocking
-    {
-        public:
-            UAVDocking(ros::NodeHandle node, ros::NodeHandle private_nh);
-            ~UAVDocking(){};
-            void init();
-            void run(); 
-        private:
-            ros::NodeHandle _nh;
-            ros::NodeHandle _private_nh;
+  class UAVDocking
+  {
+    public:
+      UAVDocking(ros::NodeHandle node, ros::NodeHandle private_nh);
+      ~UAVDocking(){};
+      void init();
+      void run(); 
+    private:
+      ros::NodeHandle _nh;
+      ros::NodeHandle _private_nh;
 
-            ros::Subscriber battery_sub_;
-            ros::Subscriber cntrler_sub_;
-            std::string _behavior_tree_xml_path;
-            std::string _behavior_tree_xml;
-            BehaviorTreeFactory factory;
-            Tree tree;
-            NodeStatus status;
-    };
+      ros::Subscriber battery_sub_;
+      ros::Subscriber cntrler_sub_;
+      std::string _behavior_tree_xml_path;
+      std::string _behavior_tree_xml;
+      BehaviorTreeFactory factory;
+      Tree tree;
+      NodeStatus status;
+  };
 };
 
 #endif
